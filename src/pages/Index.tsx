@@ -1,12 +1,15 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '@/components/LoginForm';
 import { useAuth } from '@/context/AuthContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import RegisterForm from '@/components/RegisterForm';
 
 const Index = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string>("login");
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,10 +27,24 @@ const Index = () => {
               Secure your digital legacy for future generations
             </p>
           </div>
-          <LoginForm />
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo credentials: user@example.com / password</p>
-          </div>
+          
+          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">Sign In</TabsTrigger>
+              <TabsTrigger value="register">Create Account</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="login">
+              <LoginForm />
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                <p>Demo credentials: user@example.com / password</p>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="register">
+              <RegisterForm onRegistrationSuccess={() => setActiveTab("login")} />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
       <footer className="border-t py-4 text-center text-sm text-muted-foreground">

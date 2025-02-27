@@ -16,6 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  register: (name: string, email: string, password: string) => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -82,6 +83,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   };
 
+  const register = async (name: string, email: string, password: string) => {
+    setIsLoading(true);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Check if user already exists
+    const existingUser = MOCK_USERS.find(u => u.email === email);
+    
+    if (existingUser) {
+      toast({
+        title: "Registration failed",
+        description: "An account with this email already exists.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // In a real app, we would make an API call to register the user
+    // For this demo, we'll just add the user to our mock database
+    const newUser = {
+      id: (MOCK_USERS.length + 1).toString(),
+      name,
+      email,
+      password, // In a real app, this would be hashed
+    };
+    
+    MOCK_USERS.push(newUser);
+    
+    toast({
+      title: "Registration successful",
+      description: "Your account has been created successfully.",
+    });
+    
+    setIsLoading(false);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('digitalWillUser');
@@ -97,7 +136,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user, 
       isLoading, 
       login, 
-      logout, 
+      logout,
+      register,
       isAuthenticated: !!user 
     }}>
       {children}
